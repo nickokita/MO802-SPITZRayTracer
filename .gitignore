@@ -1,0 +1,10 @@
+RayTracer
+*.tga
+*.gch
+*.out
+*.o
+run/
+scenes2/
+results/
+samples/
+bin/

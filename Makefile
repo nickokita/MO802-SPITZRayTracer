@@ -1,0 +1,2 @@
+all:
+	g++ -g -fopenmp -o ./bin/RayTracer_spits -Iinclude/ -DSPITZ_SERIAL_DEBUG src/Air.cpp src/Boundaries.cpp src/BSP.cpp src/Camera.cpp src/Checkerboard.cpp src/Color.cpp src/CrissCross.cpp src/FlatColor.cpp src/Glass.cpp src/Image.cpp src/Intersection.cpp src/Light.cpp src/Marble.cpp src/Material.cpp src/NormalMap.cpp src/Object.cpp src/PerlinNoise.cpp src/Ray.cpp src/RayTracer.cpp src/ShinyColor.cpp src/Sphere.cpp src/Triangle.cpp src/Turbulence.cpp src/Vector.cpp src/Wood.cpp src/module.cpp

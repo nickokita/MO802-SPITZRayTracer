@@ -1,0 +1,17 @@
+.gitignore
+LICENSE
+Makefile
+README.md
+bin/
+build-omp.sh
+build-spits.sh
+include/
+models/
+run-omp.sh
+run-spits-parallel.sh
+run-spits-serial.sh
+runtime/
+samples/
+scenes/
+src/
+
