@@ -33,7 +33,9 @@ mkdir -p $OUTDIR
 # Ensure the execution directory exists
 if [ ! -d "$RUNDIR"]; then
     mkdir -p $RUNDIR
-    cp -r models/ $RUNDIR/
+    cd $RUNDIR
+    ln -s ../models/ models/
+    cd -
 fi
 
 # Some PYPITS flags
