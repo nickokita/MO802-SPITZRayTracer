@@ -58,10 +58,10 @@ do
     FILENAME="${FILENAME%.*}"
     OUTFILE="$FILENAME.tga"
     OUTLOG="$FILENAME.log"
-    OUTDIR="$RUNDIR/`basename $SCENE`"
+    OUTSCNDIR="$RUNDIR/`basename $SCENE`"
     echo $SCENE...
-    mkdir -p $OUTDIR
-    pushd $OUTDIR
+    mkdir -p $OUTSCNDIR
+    pushd $OUTSCNDIR
     rm -rf nodes* jm.* log
     (time $PF/$PROGRAM $PPFLAGS $PF/$MODULE \
     $PF/$SCENE $SUPER_SAMPLES $DEPTH_COMPLEXITY $PF/$OUTFILE) 2>&1 | tee $PF/$OUTLOG
