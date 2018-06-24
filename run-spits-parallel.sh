@@ -9,6 +9,9 @@
 SCENES="${@:1}"
 SCENES="${SCENES:-`ls scenes/*.scn`}"
 
+# Program Folder
+export PF=`pwd`
+
 # Ray tracing parameters
 export SUPER_SAMPLES=1
 export DEPTH_COMPLEXITY=5
@@ -31,10 +34,10 @@ export RUNDIR="./run/$HOSTNAME/"
 mkdir -p $OUTDIR
 
 # Ensure the execution directory exists
-if [ ! -d "$RUNDIR"]; then
+if [ ! -d "$RUNDIR" ]; then
     mkdir -p $RUNDIR
     cd $RUNDIR
-    ln -s ../models/ models/
+    ln -s ../../models/ . 
     cd -
 fi
 
@@ -60,7 +63,7 @@ do
     mkdir -p $OUTDIR
     pushd $OUTDIR
     rm -rf nodes* jm.* log
-    (time ../../$PROGRAM $PPFLAGS ../../$MODULE \
-    ../../$SCENE $SUPER_SAMPLES $DEPTH_COMPLEXITY ../../$OUTFILE) 2>&1 | tee ../../$OUTLOG
+    (time $PF/$PROGRAM $PPFLAGS $PF/$MODULE \
+    $PF/$SCENE $SUPER_SAMPLES $DEPTH_COMPLEXITY $PF/$OUTFILE) 2>&1 | tee $PF/$OUTLOG
     popd
 done
