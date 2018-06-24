@@ -22,16 +22,19 @@ export MODULEDIR="./bin"
 export MODULE="$MODULEDIR/RayTracer_spits-$HOSTNAME.so"
 
 # Output directory
-export OUTDIR="./results/spits-parallel"
+export OUTDIR="./results/spits-parallel-$HOSTNAME"
 
 # Execution directory
-export RUNDIR="./run"
+export RUNDIR="./run/$HOSTNAME/"
 
 # Ensure the output directory exists
 mkdir -p $OUTDIR
 
 # Ensure the execution directory exists
-mkdir -p $RUNDIR
+if [ ! -d "$RUNDIR"]; then
+    mkdir -p $RUNDIR
+    cp -r models/ $RUNDIR/
+fi
 
 # Some PYPITS flags
 #
