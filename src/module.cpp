@@ -38,6 +38,7 @@
 #include <iostream>
 #include <fstream>
 #include <ctime>
+#include <sys/time.h>
 
 #include "RayTracer.h"
 #include "Vector.h"
@@ -51,9 +52,12 @@ private:
     int maxWidth;
     int curWidth;
 
+    struct timeval time_start;
+
 public:
     job_manager(int argc, const char *argv[], spitz::istream& jobinfo)
     {
+        gettimeofday(&time_start, NULL);
         curWidth = 0;
         maxWidth = 1920;
 
@@ -66,12 +70,12 @@ public:
 
         if (curWidth < maxWidth) {
             o << curWidth;
+            int finalWidth = (curWidth + 15 > 1920) ? 1920 : curWidth + 15;
 
-            curWidth = (curWidth + 15 > 1920) ? 1920 : curWidth + 15;
-            o << curWidth;
+            o << finalWidth;
+            std::cout << "[JM] Task for columns " << curWidth << " to " << finalWidth << " generated." << std::endl;
 
-
-            std::cout << "[JM] Task generated." << std::endl;
+            curWidth = finalWidth;
 
             // Send the task to the Spitz runtime
             task.push(o);
@@ -83,6 +87,13 @@ public:
     
     ~job_manager()
     {
+        struct timeval time_end;
+        gettimeofday(&time_end, NULL);
+
+        float total = time_end.tv_sec - time_start.tv_sec;
+        total += (time_end.tv_usec - time_start.tv_usec)/1000000.0f;
+
+        std::cout << "[JM] Finished job in: " << total << " seconds" << std::endl;
     }
 };
 
@@ -127,6 +138,9 @@ public:
     
     int run(spitz::istream& task, const spitz::pusher& result)
     {
+        struct timeval time_start;
+        gettimeofday(&time_start, NULL);
+
         // Binary stream used to store the output
         spitz::ostream o;
 
@@ -137,6 +151,7 @@ public:
         task >> lastWidth; 
         o << curWidth;
         o << lastWidth;
+        std::cout << "[WK] Started task columns " << curWidth << " to " << lastWidth << std::endl;
         
         int columnsCompleted = 0;
         (*rayTracer).camera.calculateWUV();
@@ -167,8 +182,15 @@ public:
         }
         // Send the result to the Spitz runtime
         result.push(o);
+
+        struct timeval time_end;
+        gettimeofday(&time_end, NULL);
+
+        float time = time_end.tv_sec - time_start.tv_sec;
+        time += (time_end.tv_usec - time_start.tv_usec)/1000000.0f;
         
-        std::cout << "[WK] Task processed." << std::endl;
+        std::cout << "[WK] Columns " << curWidth << " to " << lastWidth << " processed." << std::endl;
+        std::cout << "[WK] Time: " << time << " seconds" << std::endl; 
 
         return 0;
     }
@@ -184,10 +206,13 @@ private:
     int columnsCompleted;
     long raysCast;
 
+    struct timeval time_start;
+
     Image *image;
 public:
     committer(int argc, const char *argv[], spitz::istream& jobinfo)
     {
+        gettimeofday(&time_start, NULL);
         if (argc > 4) {
             outFile = argv[4];
         } else {
@@ -228,17 +253,33 @@ public:
         }
 
         float percentage = columnsCompleted/(float)1920 * 100;
+        struct timeval this_commit;
+        gettimeofday(&this_commit, NULL);
+
+        float sofar = this_commit.tv_sec - time_start.tv_sec;
+        sofar += (this_commit.tv_usec - time_start.tv_usec)/1000000.0f;
+        float expected = ((sofar * 1920)/(columnsCompleted)) - sofar;
+
         std::cout << "[CO] Percentage completed: " << percentage << "%" << std::endl;
+        std::cout << "[CO] Time to finish: " << expected << " seconds" << std::endl;
         std::cout << "[CO] Rays cast: " << raysCast << std::endl;
 
-        std::cout << "[CO] Result committed." << std::endl;
+        std::cout << "[CO] Columns " << init_width << " to " << final_width << " committed." << std::endl;
         return 0;
     }
     
     ~committer()
     {
-        std::cout << "Rays cast: " << raysCast << std::endl;
         (*image).WriteTga(outFile.c_str(), false);
+        struct timeval final_commit;
+        gettimeofday(&final_commit, NULL);
+
+        float time = final_commit.tv_sec - time_start.tv_sec;
+        time += (final_commit.tv_usec - time_start.tv_usec)/1000000.0f;
+
+        std::cout << "[CO-Final] Rays cast: " << raysCast << std::endl;
+        std::cout << "[CO-Final] Time: " << time << " seconds" << std::endl;
+        std::cout << "[CO-Final] Performance: " << raysCast/time << " rays/sec" << std::endl;
     }
 };
 

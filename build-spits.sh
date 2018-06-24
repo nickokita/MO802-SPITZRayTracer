@@ -9,7 +9,7 @@ export CXX=g++
 
 # Output binary
 export OUTDIR="./bin"
-export OUTFILE="$OUTDIR/RayTracer_spits"
+export OUTFILE="$OUTDIR/RayTracer_spits-$HOSTNAME"
 
 # Ensure the output directory exists
 mkdir -p $OUTDIR

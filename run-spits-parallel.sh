@@ -19,7 +19,7 @@ export PROGRAM="$PROGDIR/spitz-run.sh"
 
 # Input binary
 export MODULEDIR="./bin"
-export MODULE="$MODULEDIR/RayTracer_spits.so"
+export MODULE="$MODULEDIR/RayTracer_spits-$HOSTNAME.so"
 
 # Output directory
 export OUTDIR="./results/spits-parallel"
